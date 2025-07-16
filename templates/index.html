@@ -1,62 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Garden Interpreter</title>
-    <style>
-        body { font-family: monospace; margin: 20px; }
-        #editor { 
-            width: 100%; 
-            height: 300px; 
-            border: 1px solid #ccc; 
-            padding: 10px;
-            font-family: monospace;
-            font-size: 14px;
-        }
-        #output { 
-            background: #f8f8f8; 
-            padding: 10px; 
-            border: 1px solid #ddd;
-            min-height: 100px;
-            white-space: pre-wrap;
-        }
-        .error { color: #d00; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garden Language Interpreter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Garden Language Interpreter</h1>
-    <textarea id="editor">plant my_plot 5
-tend my_plot
-water 3
-harvest my_plot</textarea>
-    <br>
-    <button onclick="runCode()">Run</button>
-    
-    <h2>Output:</h2>
-    <div id="output"></div>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-leaf"></i> Garden Language Interpreter</h1>
+            <p class="subtitle">Write, run, and debug Garden programs directly in your browser</p>
+        </header>
+        
+        <main>
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-code"></i> Garden Code Editor
+                </div>
+                <div class="editor-container">
+                    <textarea id="editor"># Welcome to the Garden interpreter!
+# Here's a sample program:
 
-    <script>
-        function runCode() {
-            const code = document.getElementById('editor').value;
-            const outputDiv = document.getElementById('output');
-            outputDiv.textContent = "Running...";
+plant example 5   # Create a plot called 'example' with value 5
+tend example      # Select the 'example' plot
+water 3           # Add 3 to current plot
+harvest example   # Output the value
+
+# Try adding:
+# prune 2
+# harvest example</textarea>
+                </div>
+                
+                <div class="controls">
+                    <div class="examples">
+                        <label for="examples"><i class="fas fa-lightbulb"></i> Examples:</label>
+                        <select id="examples">
+                            <option value="">Select an example...</option>
+                            <option value="basic">Basic arithmetic</option>
+                            <option value="loop">Loop example</option>
+                            <option value="function">Function example</option>
+                            <option value="weather">Weather effects</option>
+                            <option value="string">Strings</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-run" onclick="runCode()">
+                        <i class="fas fa-play"></i> Run Code
+                    </button>
+                </div>
+            </div>
             
-            fetch('/run', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ code: code })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    outputDiv.innerHTML = `<span class="error">${data.error}</span>`;
-                } else {
-                    outputDiv.textContent = data.harvest || "(No output)";
-                }
-            })
-            .catch(error => {
-                outputDiv.innerHTML = `<span class="error">Error: ${error.message}</span>`;
-            });
-        }
-    </script>
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-terminal"></i> Program Output
+                    <span class="status" id="status">Ready</span>
+                </div>
+                <div class="output-container">
+                    <div class="output-placeholder" id="output-placeholder">Program output will appear here...</div>
+                    <div id="output"></div>
+                </div>
+            </div>
+        </main>
+        
+        <div class="footer">
+            <p>Garden Language Interpreter &copy; 2025 | Made with <i class="fas fa-heart" style="color:#e74c3c"></i> by mzums</p>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
 </body>
 </html>

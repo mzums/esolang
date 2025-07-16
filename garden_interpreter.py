@@ -67,8 +67,7 @@ class Garden:
 
     def tend_plot(self, plot_name):
         if plot_name not in self.plots and plot_name not in self.string_plots:
-            self.plant_seed(plot_name, 0)
-            
+            raise NameError(f"Plot '{plot_name}' not defined!")
         self.current_plot = plot_name
         self.current_plot_type = 'str' if plot_name in self.string_plots else 'int'
 
@@ -88,9 +87,13 @@ class Garden:
             self.string_plots[self.current_plot][start:end]
 
     def water_plot(self, amount):
+        if self.current_plot is None:
+            raise ValueError("No current plot selected!")
         self.plots[self.current_plot] += amount
 
     def prune_plot(self, amount):
+        if self.current_plot is None:
+            raise ValueError("No current plot selected!")
         self.plots[self.current_plot] -= amount
 
     def graft_value(self, value, arg_str):
@@ -247,20 +250,25 @@ def parse_function_body(body):
 
 def resolve_value(garden, value_str):
     if value_str is None:
-        return 0
+        raise NameError(f"Plot or value '{value_str}' not defined!")
         
-    if value_str.startswith('"') and value_str.endswith('"'):
-        return value_str[1:-1]
-        
-    if value_str.replace('-', '').isdigit():
+    if isinstance(value_str, str):
+        value_str = value_str.strip()
+        if value_str.startswith('"') and value_str.endswith('"'):
+            return value_str[1:-1]
+    
+    try:
         return int(value_str)
+    except ValueError:
+        pass
         
     if value_str in garden.plots:
         return garden.plots[value_str]
+        
     if value_str in garden.string_plots:
         return garden.string_plots[value_str]
         
-    raise NameError(f"Plot or string '{value_str}' not defined!")
+    raise NameError(f"Plot or value '{value_str}' not defined!")
 
 def tokenize_line(line):
     tokens = []
@@ -392,13 +400,14 @@ def execute(program, functions, function_labels):
                     elif plot_name in garden.string_plots:
                         value = garden.string_plots[plot_name]
                     else:
-                        value = 0
+                        raise NameError(f"Plot '{plot_name}' not defined!")
                 else:
+                    if garden.current_plot is None:
+                        raise ValueError("No current plot selected!")
                     if garden.current_plot_type == 'int':
                         value = garden.plots[garden.current_plot]
                     else:
                         value = garden.string_plots[garden.current_plot]
-                        
                 garden.add_to_harvest(value)
             elif cmd == 'sow':
                 amount = resolve_value(garden, instruction[1])
@@ -478,11 +487,14 @@ def execute(program, functions, function_labels):
                     pc = return_pc - 1
                 else:
                     break
-        except Exception as e:
-            print(f"Error at instruction {pc+1}: {e}")
-            print(f"Instruction: {instruction}")
+            else:
+                raise ValueError(f"Unknown command: {cmd}")
+                
+        except Exception as error_exc:
+            error = f"Error at instruction {pc+1}: {error_exc}\nInstruction: {instruction}"
             break
-        pc += 1        
+        pc += 1
+        
     return {
         'harvest': garden.get_harvest(),
         'error': error
@@ -494,13 +506,21 @@ if __name__ == "__main__":
         print("Usage: python gardeners_script.py <filename.garden>")
         sys.exit(1)
         
-    with open(sys.argv[1], 'r') as f:
-        source = f.read()
+    try:
+        with open(sys.argv[1], 'r') as f:
+            source = f.read()
+            
+        program, functions, function_labels = parse_program(source)
+        result = execute(program, functions, function_labels)
         
-    program, functions, function_labels = parse_program(source)
-    result = execute(program, functions, function_labels)
-    
-    if result and 'harvest' in result:
-        print(result['harvest'])
-    else:
-        print("Program executed but produced no output.")
+        if result.get('error'):
+            print(result['error'])
+            sys.exit(1)
+        elif result.get('harvest'):
+            print(result['harvest'])
+        else:
+            print("Program executed but produced no output.")
+            
+    except Exception as ex:
+        print(f"Fatal error: {ex}")
+        sys.exit(1)

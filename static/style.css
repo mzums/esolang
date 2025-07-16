@@ -1,0 +1,248 @@
+:root {
+    --primary: #2c3e50;
+    --secondary: #3498db;
+    --success: #27ae60;
+    --danger: #e74c3c;
+    --light: #f8f9fa;
+    --dark: #343a40;
+    --code-bg: #f5f7fa;
+    --border: #dfe6e9;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: var(--dark);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px 0;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 10px;
+    position: relative;
+    display: inline-block;
+}
+
+h1:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: var(--secondary);
+    border-radius: 2px;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #7f8c8d;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.card-header {
+    background: var(--primary);
+    color: white;
+    padding: 15px 20px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.card-header i {
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+
+.editor-container {
+    position: relative;
+}
+
+#editor {
+    width: 100%;
+    height: 300px;
+    padding: 20px;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 15px;
+    line-height: 1.5;
+    border: none;
+    resize: vertical;
+    background: var(--code-bg);
+    color: #2d3436;
+    tab-size: 4;
+}
+
+#editor:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--secondary);
+}
+
+.controls {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn {
+    padding: 12px 25px;
+    background: var(--secondary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.btn i {
+    margin-right: 8px;
+}
+
+.btn:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-run {
+    background: var(--success);
+}
+
+.btn-run:hover {
+    background: #219653;
+    box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
+}
+
+.examples {
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+.examples select {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: white;
+    margin-left: 10px;
+    font-family: inherit;
+}
+
+.output-container {
+    position: relative;
+}
+
+#output {
+    min-height: 150px;
+    padding: 20px;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 15px;
+    white-space: pre-wrap;
+    background: var(--code-bg);
+    border: none;
+    overflow-y: auto;
+    max-height: 400px;
+}
+
+.output-placeholder {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: #95a5a6;
+    pointer-events: none;
+}
+
+.error {
+    color: var(--danger);
+    background: rgba(231, 76, 60, 0.05);
+    border-left: 4px solid var(--danger);
+    padding: 10px 15px;
+    margin: 10px 0;
+    border-radius: 0 4px 4px 0;
+}
+
+.footer {
+    text-align: center;
+    color: #7f8c8d;
+    margin-top: 30px;
+    padding: 20px 0;
+    font-size: 0.9rem;
+}
+
+.status {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: #e1f5fe;
+    color: #0288d1;
+    font-size: 14px;
+    margin-left: 15px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.status.active {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .controls {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .examples {
+        width: 100%;
+    }
+    
+    .examples select {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 5px;
+    }
+}
