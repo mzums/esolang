@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Garden Interpreter</title>
+    <style>
+        body { font-family: monospace; margin: 20px; }
+        #editor { 
+            width: 100%; 
+            height: 300px; 
+            border: 1px solid #ccc; 
+            padding: 10px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        #output { 
+            background: #f8f8f8; 
+            padding: 10px; 
+            border: 1px solid #ddd;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+        .error { color: #d00; }
+    </style>
+</head>
+<body>
+    <h1>Garden Language Interpreter</h1>
+    <textarea id="editor">plant my_plot 5
+tend my_plot
+water 3
+harvest my_plot</textarea>
+    <br>
+    <button onclick="runCode()">Run</button>
+    
+    <h2>Output:</h2>
+    <div id="output"></div>
+
+    <script>
+        function runCode() {
+            const code = document.getElementById('editor').value;
+            const outputDiv = document.getElementById('output');
+            outputDiv.textContent = "Running...";
+            
+            fetch('/run', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: code })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    outputDiv.innerHTML = `<span class="error">${data.error}</span>`;
+                } else {
+                    outputDiv.textContent = data.harvest || "(No output)";
+                }
+            })
+            .catch(error => {
+                outputDiv.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+            });
+        }
+    </script>
+</body>
+</html>
