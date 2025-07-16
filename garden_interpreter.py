@@ -115,19 +115,35 @@ class Garden:
             self.plots[self.current_plot] //= value
 
     def check_soil(self, condition, target, plot_name):
-        if plot_name not in self.plots:
+        if plot_name in self.plots:
+            current = self.plots[plot_name]
+        elif plot_name in self.string_plots:
+            current = self.string_plots[plot_name]
+        else:
             self.plant_seed(plot_name, 0)
-        current = self.plots[plot_name]
+            current = 0
+
+        if isinstance(target, str) and target in self.plots:
+            target_val = self.plots[target]
+        elif isinstance(target, str) and target in self.string_plots:
+            target_val = self.string_plots[target]
+        else:
+            target_val = target
+
         if condition == 'rich':
-            return current > target
+            return current > target_val
         elif condition == 'poor':
-            return current < target
+            return current < target_val
         elif condition == 'balanced':
-            return current == target
+            return current == target_val
         return False
 
     def store_in_greenhouse(self):
-        self.greenhouse.append(self.plots[self.current_plot])
+        if self.current_plot_type == 'int':
+            value = self.plots[self.current_plot]
+        else:
+            value = self.string_plots[self.current_plot]
+        self.greenhouse.append(value)
 
     def retrieve_from_greenhouse(self):
         if not self.greenhouse:
@@ -173,13 +189,16 @@ def parse_program(source):
                     args = []
                 current_function = func_name
                 function_args[func_name] = args
+                
                 body_start_index = None
                 for i, token in enumerate(tokens):
                     if token == '{':
                         body_start_index = i + 1
                         break
+                
                 if body_start_index is not None and body_start_index < len(tokens):
                     body_lines.append(' '.join(tokens[body_start_index:]))
+                
                 brace_count = 1
             else:
                 if tokens[0].endswith(':'):
@@ -192,20 +211,28 @@ def parse_program(source):
                 brace_count += tokens.count('{')
             if '}' in tokens:
                 brace_count -= tokens.count('}')
+            
             if brace_count <= 0:
-                if '}' in tokens:
-                    end_index = tokens.index('}')
-                    body_lines.append(' '.join(tokens[:end_index]))
+                end_index = None
+                for i, token in enumerate(tokens):
+                    if token == '}':
+                        end_index = i
+                        break
+                
+                if end_index is not None:
+                    if end_index > 0:
+                        body_lines.append(' '.join(tokens[:end_index]))
                 else:
                     body_lines.append(' '.join(tokens))
-                body_str = ' '.join(body_lines)
-                function_bodies[func_name] = body_str
+                
+                body_str = '\n'.join(body_lines)
+                function_bodies[current_function] = body_str
                 current_function = None
                 body_lines = []
                 brace_count = 0
             else:
                 body_lines.append(' '.join(tokens))
-                
+    
     for func_name, body in function_bodies.items():
         func_program = parse_function_body(body)
         labels = {}
@@ -230,6 +257,25 @@ def parse_program(source):
         main_program.append(instruction)
         
     return main_program, functions, function_labels
+
+def parse_function_body(body):
+    lines = body.split('\n')
+    parsed = []
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            continue
+            
+        tokens = tokenize_line(stripped)
+        if not tokens:
+            continue
+            
+        if tokens[0].endswith(':'):
+            label_name = tokens[0][:-1]
+            parsed.append(('label', label_name))
+        else:
+            parsed.append(tuple(tokens))
+    return parsed
 
 def parse_function_body(body):
     lines = body.split('\n')
@@ -409,14 +455,6 @@ def execute(program, functions, function_labels):
                     else:
                         value = garden.string_plots[garden.current_plot]
                 garden.add_to_harvest(value)
-            elif cmd == 'sow':
-                amount = resolve_value(garden, instruction[1])
-                watering_can = amount
-            elif cmd == 'irrigate':
-                plot_name = instruction[1]
-                if plot_name not in garden.plots:
-                    garden.plant_seed(plot_name, 0)
-                garden.plots[plot_name] += watering_can
             elif cmd == 'bloom':
                 times = resolve_value(garden, instruction[1])
                 label_name = instruction[2]
@@ -441,12 +479,6 @@ def execute(program, functions, function_labels):
             elif cmd == 'crossbreed':
                 value = resolve_value(garden, instruction[1])
                 garden.plots[garden.current_plot] ^= value
-            elif cmd == 'rotate':
-                degrees = resolve_value(garden, instruction[1])
-                value = garden.plots[garden.current_plot] & 0xFF
-                degrees = degrees % 8
-                rotated = ((value << degrees) | (value >> (8 - degrees))) & 0xFF
-                garden.plots[garden.current_plot] = rotated
             elif cmd == 'function':
                 pass
             elif cmd == 'call':

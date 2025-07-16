@@ -7,6 +7,14 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
+@app.route('/documentation')
+def documentation():
+    return render_template('documentation.html')
+
+@app.route('/interpreter')
+def interpreter():
+    return render_template('interpreter.html')
+
 @app.route('/run', methods=['POST'])
 def run_code():
     source = request.json['code']

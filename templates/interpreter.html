@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garden Language Interpreter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-leaf"></i> Garden Language Interpreter</h1>
+            <p class="subtitle">Write, run, and debug Garden programs directly in your browser</p>
+        </header>
+        
+        <main>
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-code"></i> Garden Code Editor
+                </div>
+                <div class="editor-container">
+                    <textarea id="editor"># Welcome to the Garden interpreter!
+# Here's a sample program:
+
+plant example 5   # Create a plot called 'example' with value 5
+tend example      # Select the 'example' plot
+water 3           # Add 3 to current plot
+harvest example   # Output the value
+
+# Try adding:
+# prune 2
+# harvest example</textarea>
+                </div>
+                
+                <div class="controls">
+                    <div class="examples">
+                        <label for="examples"><i class="fas fa-lightbulb"></i> Examples:</label>
+                        <select id="examples">
+                            <option value="">Select an example...</option>
+                            <option value="basic">Basic arithmetic</option>
+                            <option value="loop">Loop example</option>
+                            <option value="function">Function example</option>
+                            <option value="weather">Weather effects</option>
+                            <option value="string">Strings</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-run" onclick="runCode()">
+                        <i class="fas fa-play"></i> Run Code
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-terminal"></i> Program Output
+                    <span class="status" id="status">Ready</span>
+                </div>
+                <div class="output-container">
+                    <div class="output-placeholder" id="output-placeholder">Program output will appear here...</div>
+                    <div id="output"></div>
+                </div>
+            </div>
+        </main>
+        
+        <div class="footer">
+            <p>Garden Language Interpreter &copy; 2025 | Made with <i class="fas fa-heart" style="color:#e74c3c"></i> by mzums</p>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
